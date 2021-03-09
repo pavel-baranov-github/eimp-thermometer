@@ -7,7 +7,7 @@ class Temperature {
     temperature = null;
 
     constructor() {
-        Temperature = "An Error Occurred: device did not provide data";
+        temperature = "An Error Occurred: device did not provide data";
     }
 
     function set(temperatureValue) {
