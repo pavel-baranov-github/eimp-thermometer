@@ -7,32 +7,41 @@ class Temperature {
     temperature = null;
 
     constructor() {
-        temperature = "An Error Occurred: device did not provide data";
+        temperature = {
+            "value" : 0.0,
+            "error" : "An Error Occurred: device did not provide data"
+        };
     }
 
     function set(temperatureValue) {
         server.log("Temperature value: " + temperatureValue);
-        temperature = temperatureValue;
+        temperature.value = temperatureValue;
+        temperature.error = "";
     }
 
     function get() {
-        if (temperature == null) {
-            temperature = "An Error Occurred: device did not provide data";
-        }
         return temperature;
     }
 }
 
 // Callback per temperature massage from device
-function getTemperature(messageHandler) {
-    temperature.set(messageHandler);
+function getTemperature(temperatureValue) {
+    temperature.set(temperatureValue);
 }
 
 // Callback per HTTP GET request to agent
 function getHTTPResponse(request, response) {
+    local result = {};
+
     if (request.method == "GET") {
         device.send("temperature", null);
-        response.send(200, HTML_HEAD + temperature.get() + HTML_BOTTOM);
+        
+        result = temperature.get();
+        if (result.error == "") {
+            response.send(200, HTML_HEAD + result.value + HTML_BOTTOM);
+        } else {
+            response.send(200, HTML_HEAD + result.error + HTML_BOTTOM);
+        }
     }
 }
 
